@@ -4,13 +4,13 @@ A __stigmergy__ simulator made as a way to learn Python and Kivy.
 
 ### Milestones
 
-[x] - Build system
-[ ] - Grid building
-[ ] - Adding the ant
-[ ] - Movable ant
-[ ] - UI
-[ ] - Ant swarm
-[ ] - Visible feedback of the search field  
+- [x] Build system
+- [ ] Grid building
+- [ ] Adding the ant
+- [ ] Movable ant
+- [ ] UI
+- [ ] Ant swarm
+- [ ] Visible feedback of the search field  
 
 
 ### Troubleshooting
