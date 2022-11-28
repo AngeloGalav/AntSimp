@@ -1,70 +1,40 @@
-from kivy.uix.button import Button
-from kivy.uix.widget import Widget
-from kivy.uix.label import Label
-from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
-from kivy.graphics import Color, Rectangle, Line
-from random import random as r
-from functools import partial
+from kivy.lang import Builder
+from kivy.properties import ColorProperty
+from layout_classes import *
+
+# load layout file
+Builder.load_file('layout/layout.kv')
+
+class GridCell(Widget):
+    color = ColorProperty('#ffffff')
+    # Change cell's color to pencil_color on a touch event
+    # collides on press or drag (_move)
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            self.color = App.get_running_app().pencil_color
+            return True
+        return super().on_touch_down(touch)
+
+    def on_touch_move(self, touch):
+        if self.collide_point(*touch.pos):
+            self.color = App.get_running_app().pencil_color
+            return True
+        return super().on_touch_move(touch)
 
 
-class StressCanvasApp(App):
-
-    def add_rects(self, label, wid, count, *largs):
-        label.text = str(int(label.text) + count)
-        with wid.canvas:
-            for x in range(count):
-                Color(r(), 1, 1, mode='hsv')
-                Rectangle(pos=(r() * wid.width + wid.x,
-                               r() * wid.height + wid.y), size=(20, 20))
-
-    def double_rects(self, label, wid, *largs):
-        count = int(label.text)
-        self.add_rects(label, wid, count, *largs)
-
-    def reset_rects(self, label, wid, *largs):
-        label.text = '0'
-        wid.canvas.clear()
-
-    def build_grid(self, wid) :
-        with wid.canvas :
-        for x in 100 :
-            for y in 100 : 
-                Line()
-                
+class MainApp(App):
+    pencil_color = ColorProperty('#ff0000ff')
 
     def build(self):
-        wid = Widget()
-
-        label = Label(text='0')
-
-        Color(0, 1, 0, 1) # green; colors range from 0-1 instead of 0-255
-
-        btn_add100 = Button(text='+ 100 rects',
-                            on_press=partial(self.add_rects, label, wid, 100))
-
-        btn_add500 = Button(text='+ 500 rects',
-                            on_press=partial(self.add_rects, label, wid, 500))
-
-        btn_double = Button(text='x 2',
-                            on_press=partial(self.double_rects, label, wid))
-
-        btn_reset = Button(text='Reset',
-                           on_press=partial(self.reset_rects, label, wid))
-
-        layout = BoxLayout(size_hint=(1, None), height=50)
-        layout.add_widget(btn_add100)
-        layout.add_widget(btn_add500)
-        layout.add_widget(btn_double)
-        layout.add_widget(btn_reset)
-        layout.add_widget(label)
-
-        root = BoxLayout(orientation='vertical')
-        root.add_widget(wid)
-        root.add_widget(layout)
-
+        self.title = "Stigmergy Simulation"
+        self.icon = "res/ant.png"
+        root = RootWidget()
+        grid = root.ids.grid
+        print(root.ids)
+        for i in range(grid.rows * grid.cols):
+            grid.add_widget(GridCell())
         return root
 
-
 if __name__ == '__main__':
-    StressCanvasApp().run()
+    MainApp().run()
