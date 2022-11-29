@@ -1,44 +1,91 @@
 import pygame
-from pygame import time, Rect
+from pygame import time, transform, image, display, gfxdraw, draw
 import random as r
-from math import floor, cos, tan, sin, pi
-from pygame import gfxdraw
+from math import floor, cos, tan, sin, pi, sqrt
+import numpy as np
 
 pygame.init()
 
-SCREEN_X = 1280
-SCREEN_Y = 720
-AGENT_NUMBER = 100
+SCREEN_X = 800
+SCREEN_Y = 600
+CELLSIZE = 4
+ANT_SIZE = (15, 30)
+AGENT_NUMBER = 200
 NEST_RADIUS = 10
+timeout = 10
 speed = 2
 
 myClock = time.Clock()
-myClock.tick(60)
- 
 # Set up the drawing window
-screen = pygame.display.set_mode([SCREEN_X, SCREEN_Y])
-pygame.display.set_caption('AntSimp')
-programIcon = pygame.image.load('res/icon.png')
-ant_image = pygame.image.load('res/ant_dm.png')
-ant_image = pygame.transform.scale(ant_image, (15, 30))
+screen = display.set_mode([SCREEN_X, SCREEN_Y])
+display.set_caption('AntSimp')
+programIcon = image.load('res/icon.png')
+display.set_icon(programIcon)
+ant_image = image.load('res/ant_dm.png')
+ant_image = transform.scale(ant_image, ANT_SIZE)
 
-pygame.display.set_icon(programIcon)
+class Grid:
+    def __init__(self) :
+        self.grid = np.zeros((SCREEN_X//CELLSIZE, SCREEN_Y//CELLSIZE))
 
-class Ant: 
+class PixelAnt: 
     def __init__(self):
         self.x = 0
         self.y = 0 
         self.dir_x = 1
         self.dir_y = 1
-    
+        self.trail = Trail()
+        self.timeout = 10
+        self.current = 0
+
     def render_ant(self): 
-        screen.blit(ant_image, (self.x, self.y))
+        gfxdraw.pixel(screen, int(self.x), int(self.y), (255,255,255,255))
+
+class PixelTrail: 
+    def __init__(self):
+        self.x = 0
+        self.y = 0 
+        self.color = ()
+    
+    def __init__(self, x, y, color):
+        self.x = x
+        self.y = y 
+        self.color = color
+    
+    def __str__(self):
+        return self.x + ", " + self.y
+    
+    def render(self) :
+        gfxdraw.pixel(screen, int(self.x), int(self.y), self.color)
+
+class Trail:
+    def __init__(self):
+        self.steps = []
+        self.timeout = 10
+        self.current = 0
+
+    def insert(self, x):
+        self.steps.append(x)
+
+    def __str__(self):
+        return self.steps.__str__()
+
+    def render(self): 
+        if (self.current >= self.timeout and len(self.steps) > 8) : 
+            self.steps.pop(0)
+            self.current = 0
+        else :
+            self.current += 1
+
+        for i in self.steps:
+            i.render()
+
+trail_food = Trail()
 
 pixels = []
 
-
 for i in range(AGENT_NUMBER): 
-    pixels.append(Ant())
+    pixels.append(PixelAnt())
 
 j = 0
 for i in pixels :
@@ -51,10 +98,9 @@ for i in pixels :
     i.dir_x = cos(t)
     i.dir_y = sin(t)
 
-# Run until the user asks to quit
+world = Grid()
 running = True
-i = 0
-screen.fill((0, 0, 50))
+
 while running:
 
     # Did the user click the window close button?
@@ -63,27 +109,34 @@ while running:
             running = False
 
     # Grid background
-    screen.fill((0, 0, 50))
+    screen.fill((0,0,0))
+    for (x,y), value in np.ndenumerate(world.grid):
+        pygame.draw.rect(screen, (0, 0, min(value, 255)), (x*CELLSIZE, y*CELLSIZE, CELLSIZE-1, CELLSIZE-1)) 
 
-    # Draw a solid blue circle in the center
+    # Draw each ant
     for i in pixels :
+        # i.dir_x = cos()
+        # i.dir_y = sqrt(1 - i.dir_x**2)
+
         i.x += speed * i.dir_x
         i.y += speed * i.dir_y
-
 
         if i.x > SCREEN_X - 1 or i.x < 1:
             i.dir_x *= -1 
         if i.y > SCREEN_Y - 1 or i.y < 1:
             i.dir_y *= -1 
 
-        # gfxdraw.pixel(screen, int(i.x), int(i.y), (255,255,255,255))
-        i.render_ant()
-    
-    pygame.draw.circle(screen, (165, 99, 0), (SCREEN_X/2, SCREEN_Y/2), NEST_RADIUS - 2);
+        world.grid[floor(i.x/CELLSIZE) - 1][floor(i.y/CELLSIZE) - 1] += 10
 
-    myClock.tick(30)
+        i.render_ant()
+
+    # Draw nest
+    pygame.draw.circle(screen, (165, 255, 0), (SCREEN_X/2, SCREEN_Y/2), NEST_RADIUS - 2);
+
+    myClock.tick(120)
     # Flip the display
     pygame.display.flip()
+
 
 # Done! Time to quit.
 pygame.quit()
