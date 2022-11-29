@@ -1,6 +1,6 @@
 # AntSimp
 
-A __stigmergy__ simulator made as a way to learn Python and Kivy.
+A __stigmergy__ simulator made in Python using `pygame`.
 
 ### Milestones
 
