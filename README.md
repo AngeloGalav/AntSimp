@@ -5,11 +5,9 @@ A __stigmergy__ simulator made in Python using `pygame`.
 ### Milestones
 
 - [x] Build system
-- [ ] Grid building
-- [ ] Adding the ant
-- [ ] Movable ant
-- [ ] UI
-- [ ] Ant swarm
+- [x] Grid building
+- [x] Adding the ants
+- [x] Ant AI
 - [ ] Visible feedback of the search field  
 
 
