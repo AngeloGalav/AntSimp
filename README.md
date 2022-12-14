@@ -7,7 +7,7 @@ A __stigmergy__ simulator made in Python using `pygame`.
 - [x] Build system
 - [x] Grid building
 - [x] Adding the ants
-- [x] Ant AI
+- [ ] Ant AI
 - [ ] Visible feedback of the search field  
 
 
