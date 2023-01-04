@@ -10,7 +10,7 @@ SCREEN_X = 800
 SCREEN_Y = 600
 CELLSIZE = 4
 ANT_SIZE = (15, 30)
-AGENT_NUMBER = 200
+AGENT_NUMBER = 1000
 NEST_RADIUS = 10
 timeout = 10
 speed = 2
@@ -92,9 +92,11 @@ for i in pixels :
     j += 1
     t = 2 * pi * j / AGENT_NUMBER 
 
+    # position ants around the nest
     i.x = int(NEST_RADIUS * cos(t) + SCREEN_X/2)
     i.y = int(NEST_RADIUS * sin(t) + SCREEN_Y/2)
 
+    # spread them out as a circle by setting the direction
     i.dir_x = cos(t)
     i.dir_y = sin(t)
 
@@ -111,7 +113,10 @@ while running:
     # Grid background
     screen.fill((0,0,0))
     for (x,y), value in np.ndenumerate(world.grid):
-        pygame.draw.rect(screen, (0, 0, min(value, 255)), (x*CELLSIZE, y*CELLSIZE, CELLSIZE-1, CELLSIZE-1)) 
+        if value < 255 : 
+            pygame.draw.rect(screen, (0, 0, min(value, 255)), (x*CELLSIZE, y*CELLSIZE, CELLSIZE-1, CELLSIZE-1)) 
+        else :
+            pygame.draw.rect(screen, (min(value - 255, 255), min(value - 255, 255), 255), (x*CELLSIZE, y*CELLSIZE, CELLSIZE-1, CELLSIZE-1)) 
 
     # Draw each ant
     for i in pixels :
