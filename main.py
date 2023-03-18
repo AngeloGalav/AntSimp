@@ -8,10 +8,12 @@ pygame.init()
 
 SCREEN_X = 800
 SCREEN_Y = 600
+FOOD_COLOR = '#FF00C0'
 CELLSIZE = 4
 ANT_SIZE = (15, 30)
-AGENT_NUMBER = 1000
+AGENT_NUMBER = 30
 NEST_RADIUS = 10
+FOOD_RADIUS = 10
 timeout = 10
 speed = 2
 
@@ -21,8 +23,14 @@ screen = display.set_mode([SCREEN_X, SCREEN_Y])
 display.set_caption('AntSimp')
 programIcon = image.load('res/icon.png')
 display.set_icon(programIcon)
-ant_image = image.load('res/ant_dm.png')
-ant_image = transform.scale(ant_image, ANT_SIZE)
+# ant_image = image.load('res/ant_dm.png')
+# ant_image = transform.scale(ant_image, ANT_SIZE)
+
+class Food:
+    def __init__(self, position, size, density) : 
+        self.size = size
+        self.position = position
+        self.density = density
 
 class Grid:
     def __init__(self) :
@@ -120,23 +128,35 @@ while running:
 
     # Draw each ant
     for i in pixels :
-        # i.dir_x = cos()
-        # i.dir_y = sqrt(1 - i.dir_x**2)
-
+        i.dir_x = r.randrange(-1,2)
+        i.dir_y = r.randrange(-1,2)
         i.x += speed * i.dir_x
         i.y += speed * i.dir_y
 
-        if i.x > SCREEN_X - 1 or i.x < 1:
+        if i.x > SCREEN_X - 1 :
+            i.x = SCREEN_X 
             i.dir_x *= -1 
-        if i.y > SCREEN_Y - 1 or i.y < 1:
+        elif i.x < 1 : 
+            i.x = 1 
+            i.dir_x *= -1 
+
+        if i.y > SCREEN_Y - 1 :  
+            i.y = SCREEN_Y
+            i.dir_y *= -1 
+        elif i.y < 1 :
+            i.y = 1
             i.dir_y *= -1 
 
         world.grid[floor(i.x/CELLSIZE) - 1][floor(i.y/CELLSIZE) - 1] += 10
 
         i.render_ant()
 
+
     # Draw nest
     pygame.draw.circle(screen, (165, 255, 0), (SCREEN_X/2, SCREEN_Y/2), NEST_RADIUS - 2);
+
+    # Draw food
+    pygame.draw.circle(screen, (255, 0, 255), (SCREEN_X/4, SCREEN_Y/4), FOOD_RADIUS - 2);
 
     myClock.tick(120)
     # Flip the display
