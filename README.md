@@ -1,5 +1,6 @@
 # AntSimp
 A __stigmergy__ simulator made in Python using `pygame`.
+It's a side-project that is taking way too long to finish.
 
 ### Milestones
 
